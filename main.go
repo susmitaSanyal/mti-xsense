@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/edaniels/golog"
-	xsense "github.com/viam-labs/mti-xsense/xsense"
 	"go.viam.com/rdk/components/sensor"
 	"go.viam.com/rdk/module"
 	"go.viam.com/utils"
@@ -20,7 +19,7 @@ func mainWithArgs(ctx context.Context, args []string, logger golog.Logger) error
 		return err
 	}
 
-	imu.AddModelFromRegistry(ctx, sensor.Subtype, xsense.Model)
+	imu.AddModelFromRegistry(ctx, sensor.Subtype, "xsense")
 
 	err = imu.Start(ctx)
 	defer imu.Close(ctx)
