@@ -13,7 +13,6 @@ import (
 
 	"go.viam.com/rdk/components/movementsensor"
 	"go.viam.com/rdk/resource"
-	"go.viam.com/rdk/spatialmath"
 	rutils "go.viam.com/rdk/utils"
 )
 
@@ -49,14 +48,10 @@ func (cfg *Config) Validate(path string) ([]string, error) {
 type xsense struct {
 	resource.Named
 	resource.AlwaysRebuild
-	angularVelocity         spatialmath.AngularVelocity
-	orientation             spatialmath.EulerAngles
-	acceleration            r3.Vector
 	magnetometer            r3.Vector
 	compassheading          float64
 	numBadReadings          uint32
 	err                     movementsensor.LastError
-	hasMagnetometer         bool
 	mu                      sync.Mutex
 	port                    io.ReadWriteCloser
 	cancelFunc              func()
@@ -76,15 +71,15 @@ func newXsense(
 	}
 
 	options := slib.OpenOptions{
-		PortName:        newConf.Port,
+		PortName:        newConf.SerialPath,
 		BaudRate:        115200,
 		DataBits:        8,
 		StopBits:        1,
 		MinimumReadSize: 1,
 	}
 
-	if newConf.BaudRate > 0 {
-		options.BaudRate = newConf.BaudRate
+	if newConf.SerialBaudRate > 0 {
+		options.BaudRate = uint(newConf.SerialBaudRate)
 	} else {
 		logger.Warnf(
 			"no valid serial_baud_rate set, setting to default of %d, baud rate of wit imus are: %v", options.BaudRate, baudRateList,
