@@ -8,16 +8,18 @@ import (
 	"github.com/edaniels/golog"
 	"github.com/golang/geo/r3"
 	slib "github.com/jacobsa/go-serial/serial"
+	geo "github.com/kellydunn/golang-geo"
 	"github.com/pkg/errors"
 	"go.viam.com/utils"
 
 	"go.viam.com/rdk/components/movementsensor"
 	"go.viam.com/rdk/resource"
+	"go.viam.com/rdk/spatialmath"
 	rutils "go.viam.com/rdk/utils"
 )
 
 var Model = resource.NewModel("viam", "sensor", "mti-xsense-200")
-var baudRateList = []uint{115200, 9600, 0}
+var baudRateList = []uint{115200}
 
 func init() {
 	resource.RegisterComponent(movementsensor.API, Model,
@@ -57,6 +59,73 @@ type xsense struct {
 	cancelFunc              func()
 	activeBackgroundWorkers sync.WaitGroup
 	logger                  golog.Logger
+}
+
+// Close
+func (mti *xsense) Close(ctx context.Context) error {
+	return nil
+}
+
+// CompassHeading
+func (mti *xsense) CompassHeading(ctx context.Context, extra map[string]interface{}) (float64, error) {
+	return 0, nil
+}
+
+// Accuracy unimplemented
+func (mti *xsense) Accuracy(ctx context.Context, extra map[string]interface{}) (map[string]float32, error) {
+	mti.mu.Lock()
+	defer mti.mu.Unlock()
+	return nil, nil
+}
+
+// AngularVelocity unimplemented
+func (mti *xsense) AngularVelocity(ctx context.Context, extra map[string]interface{}) (spatialmath.AngularVelocity, error) {
+	mti.mu.Lock()
+	defer mti.mu.Unlock()
+	return spatialmath.AngularVelocity{}, nil
+}
+
+// LinearAcceleration unimplemented
+func (mti *xsense) LinearAcceleration(ctx context.Context, extra map[string]interface{}) (r3.Vector, error) {
+	mti.mu.Lock()
+	defer mti.mu.Unlock()
+	return r3.Vector{}, nil
+}
+
+// LinearVelocity unimplemented
+func (mti *xsense) LinearVelocity(ctx context.Context, extra map[string]interface{}) (r3.Vector, error) {
+	mti.mu.Lock()
+	defer mti.mu.Unlock()
+	return r3.Vector{}, nil
+}
+
+// Orientation unimplemented
+func (mti *xsense) Orientation(ctx context.Context, extra map[string]interface{}) (spatialmath.Orientation, error) {
+	mti.mu.Lock()
+	defer mti.mu.Unlock()
+	return spatialmath.NewZeroOrientation(), nil
+}
+
+// Position unimplemented
+func (mti *xsense) Position(ctx context.Context, extra map[string]interface{}) (*geo.Point, float64, error) {
+	mti.mu.Lock()
+	defer mti.mu.Unlock()
+	return nil, 0, nil
+}
+
+// Properties
+func (mti *xsense) Properties(ctx context.Context, extra map[string]interface{}) (*movementsensor.Properties, error) {
+	mti.mu.Lock()
+	defer mti.mu.Unlock()
+	return &movementsensor.Properties{
+		CompassHeadingSupported: true,
+	}, nil
+}
+
+// Readings
+func (mti *xsense) Readings(ctx context.Context, extra map[string]interface{}) (map[string]interface{}, error) {
+	readings := make(map[string]interface{})
+	return readings, nil
 }
 
 func newXsense(
